@@ -2,42 +2,41 @@ params.input_dir = "input"
 params.sample_sheet = "samples.csv"
 params.sample_sheet_colheader = "SampleID"
 
-
+// FIRST CHANNEL
 Channel.fromPath( file(params.sample_sheet) )
                     .splitCsv(header: true)
                     .map{row ->
-                        sample_ID = row."${params.sample_sheet_colheader}" // <- !! THIS DOES NOT WORK ANYMORE? !!
+                        // sample_ID = row."${params.sample_sheet_colheader}" // <- !! THIS DOES NOT WORK ANYMORE? !!
+                        sample_ID = row[ params.sample_sheet_colheader ]
                         sample_bam = file("${params.input_dir}/${sample_ID}.bam")
                         sample_bai = file("${params.input_dir}/${sample_ID}.bam.bai")
-                        println "full row: ${row}"
-                        println "sample_ID: ${sample_ID}"
-                        println "bam file: ${sample_bam}"
-                        println "bai file: ${sample_bai}"
+                        println "## full row: ${row}"
+                        println "## sample_ID: ${sample_ID}"
+                        println "## bam file: ${sample_bam}"
+                        println "## bai file: ${sample_bai}"
+                        [sample_ID, sample_bam, sample_bai]
                     }
-                    .into{ samples_demo }
+                    .set{ samples_demo }
 
-
+// SECOND CHANNEL
 Channel.fromPath( file(params.sample_sheet) )
                     .splitCsv(header: true)
                     .map{row ->
                         sample_col_key = row.keySet()[0] // first column is sample_ID <- !! THIS WORKS !!
-                        sample_ID = row."$sample_col_key"
+                        // sample_ID = row."$sample_col_key"
+                        sample_ID = row[ sample_col_key ]
                         sample_bam = file("${params.input_dir}/${sample_ID}.bam")
                         sample_bai = file("${params.input_dir}/${sample_ID}.bam.bai")
                         println "-------------"
                         println "--- start csv row mapping ----"
-                        println "full row: ${row}"
-                        println "sample_ID: ${sample_ID}"
-                        println "bam file: ${sample_bam}"
-                        println "bai file: ${sample_bai}"
+                        println "-- full row: ${row}"
+                        println "-- sample_ID: ${sample_ID}"
+                        println "-- bam file: ${sample_bam}"
+                        println "-- bai file: ${sample_bai}"
                         println "--- end csv row mapping ----"
                         println "-------------"
 
-                        return [
-                        sample_ID,
-                        sample_bam,
-                        sample_bai
-                                ]
+                        [sample_ID, sample_bam, sample_bai]
                     }
                     .into{ samples_print;
                         samples_check;
