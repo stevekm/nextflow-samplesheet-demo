@@ -1,13 +1,14 @@
 params.input_dir = "input"
 params.sample_sheet = "samples.csv"
 params.sample_sheet_colheader = "SampleID"
-x = params.sample_sheet_colheader
+
 
 
 Channel.fromPath( file(params.sample_sheet) )
                     .splitCsv(header: true)
                     .map{row ->
-                        sample_col_key = row.keySet()[0] // first column is sample_ID
+                        // sample_ID = row."$params.sample_sheet_colheader" // <- !! THIS DOES NOT WORK ANYMORE? !!
+                        sample_col_key = row.keySet()[0] // first column is sample_ID <- !! THIS WORKS !!
                         sample_ID = row."$sample_col_key"
                         sample_bam = file("${params.input_dir}/${sample_ID}.bam")
                         sample_bai = file("${params.input_dir}/${sample_ID}.bam.bai")
@@ -29,14 +30,6 @@ Channel.fromPath( file(params.sample_sheet) )
                     .into{ samples_print;
                         samples_check;
                         samples_subscr }
-
-samples_subscr.subscribe { item ->
-                                    println "# # ------------- # #"
-                                    println "# # --- start samples_subscr row print ---- # #"
-                                    println item.join("\t")
-                                    println "# #--- end samples_subscr row print ---- # #"
-                                    println "# # ------------- # #"
-                                }
 
 
 process print_samples {
