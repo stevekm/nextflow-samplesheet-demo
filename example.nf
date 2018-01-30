@@ -18,10 +18,13 @@ process make_file {
 samples_files2.toList().println()
 
 process gather_files {
+    echo true
     input:
     file "*" from samples_files.toList()
 
-    exec:
-    println "*"
-
+    script:
+    """
+    pwd
+    echo *
+    """
 }
