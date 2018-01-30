@@ -6,6 +6,9 @@ install:
 run:
 	./nextflow run main.nf
 
+example:
+	./nextflow run example.nf
+
 clean-logs:
 	rm -f .nextflow.log.*
 

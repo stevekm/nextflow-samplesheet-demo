@@ -1,5 +1,6 @@
 params.input_dir = "input"
-params.sample_sheet = "samples.csv"
+params.output_dir = "output"
+params.sample_sheet = "samples.tsv"
 params.sample_sheet_colheader = "SampleID"
 
 // FIRST CHANNEL
@@ -20,7 +21,7 @@ Channel.fromPath( file(params.sample_sheet) )
 
 // SECOND CHANNEL
 Channel.fromPath( file(params.sample_sheet) )
-                    .splitCsv(header: true)
+                    .splitCsv(header: true, sep: '\t')
                     .map{row ->
                         def sample_col_key = row.keySet()[0] // first column is sample_ID <- !! THIS WORKS !!
                         // sample_ID = row."$sample_col_key"
@@ -55,21 +56,41 @@ process print_samples {
 
 }
 
-process check_samples {
+process make_samples_foo_txt {
     tag { sample_ID }
     executor "local"
-    publishDir "output", mode: "copy", overwrite: true
+    publishDir "${params.output_dir}/foo"
 
     input:
     set val(sample_ID), file(sample_bam), file(sample_bai) from samples_check
 
     output:
-    file "${sample_ID}.foo.txt"
+    file "${sample_ID}.foo.txt" into samples_foo, samples_foo2
 
     script:
     """
     if [ -e "${sample_ID}.bam" ]; then echo "sample_bam exists"; else echo "sample_bam does not exist" && exit 1 ; fi
     if [ -e "${sample_ID}.bam.bai" ]; then echo "sample_bai exists"; else echo "sample_bai does not exist" && exit 1 ; fi
-    touch "${sample_ID}.foo.txt"
+    echo "${sample_ID}" > "${sample_ID}.foo.txt"
     """
+}
+
+samples_foo2.toList().println()
+
+process all_samples_bar {
+    executor "local"
+    publishDir "${params.output_dir}/bar"
+
+    input:
+    file "*.foo.txt" from samples_foo.toList()
+
+    output:
+    file "files.txt"
+
+    script:
+    """
+    echo "*.foo.txt" > files.txt
+    """
+
+
 }
