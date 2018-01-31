@@ -89,13 +89,13 @@ process print_samples {
 process make_samples_foo_txt {
     tag { sample_ID }
     executor "local"
-    publishDir "${params.output_dir}/foo"
+    publishDir "${params.output_dir}/samples_foo_txt"
 
     input:
     set val(sample_ID), file(sample_bam), file(sample_bai) from samples_check
 
     output:
-    file "${sample_ID}.foo.txt" into samples_foo, samples_foo2
+    file "${sample_ID}.foo.txt" into samples_files, samples_files2
 
     script:
     """
@@ -105,14 +105,14 @@ process make_samples_foo_txt {
     """
 }
 
-samples_foo2.toList().println()
+samples_files2.toList().println()
 
-process all_samples_bar {
+process files_list_file {
     executor "local"
-    publishDir "${params.output_dir}/bar"
+    publishDir "${params.output_dir}/files_list_file"
 
     input:
-    file "*.foo.txt" from samples_foo.toList()
+    file "*.foo.txt" from samples_files.toList()
 
     output:
     file "files.txt"
