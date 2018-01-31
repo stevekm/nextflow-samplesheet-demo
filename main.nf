@@ -9,6 +9,8 @@ params.pairs_sample_sheet_tumor_header = "#SAMPLE-T"
 params.pairs_sample_sheet_normal_header = "#SAMPLE-N"
 params.pairs_sheet_nomatch_value = "NA"
 
+params.samples_list = ['Sample1', 'Sample2', 'Sample3', 'Sample4']
+
 // Each Sample
 Channel.fromPath( file(params.sample_sheet) )
                     .splitCsv(header: true, sep: '\t')
@@ -39,6 +41,7 @@ Channel.fromPath( file(params.sample_sheet) )
                         samples_demo
                     }
 
+// Sample Pairs
 Channel.fromPath( file(params.pairs_sample_sheet) )
                     .splitCsv(header: true, sep: ',')
                     .map{row ->
@@ -70,6 +73,10 @@ Channel.fromPath( file(params.pairs_sample_sheet) )
                     }
                     .set{ samples_pairs }
 
+
+
+// Samples List
+Channel.from( params.samples_list ).set{ samples_list }
 
 process print_samples {
     tag { sample_ID }
@@ -156,5 +163,38 @@ process gather_samples_pairs_txt {
     """
     echo "*"
     echo "*" > gather_samples_pairs.txt
+    """
+}
+
+
+process make_samples_list_files {
+    echo true
+    publishDir "${params.output_dir}/make_samples_list_files"
+
+    input:
+    val(sampleID) from samples_list
+
+    output:
+    file "${sampleID}" into samples_list_files, samples_list_files2
+
+    script:
+    """
+    echo "${sampleID}" > "${sampleID}"
+    """
+}
+
+samples_list_files2.toList().println()
+
+process print_samples_list_files {
+    echo true
+    publishDir "${params.output_dir}/gather_samples_list_files"
+
+    input:
+    file "*" from samples_list_files.toList()
+
+    script:
+    """
+    pwd
+    echo *
     """
 }

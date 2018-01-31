@@ -7,7 +7,7 @@ run:
 	./nextflow run main.nf
 
 example:
-	./nextflow run example.nf
+	./nextflow run examples/example.nf
 
 clean-logs:
 	rm -f .nextflow.log.*
