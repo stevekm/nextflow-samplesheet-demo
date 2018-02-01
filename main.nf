@@ -1,5 +1,5 @@
 //
-// 
+//
 // Example pipeline to show Sample Sheet parsing
 //
 //
@@ -180,7 +180,7 @@ process make_samples_list_files {
     val(sampleID) from samples_list
 
     output:
-    file "${sampleID}" into samples_list_files, samples_list_files2
+    file "${sampleID}" into samples_list_files, samples_list_files2, samples_list_files3, samples_list_files4
 
     script:
     """
@@ -201,5 +201,31 @@ process print_samples_list_files {
     """
     pwd
     echo *
+    """
+}
+
+
+process test_py {
+    echo true
+
+    input:
+    file "*" from samples_list_files4.toList()
+
+    script:
+    """
+    test.py
+    """
+}
+
+
+process test_R {
+    echo true
+
+    input:
+    file "*" from samples_list_files3.toList()
+
+    script:
+    """
+    test.R
     """
 }
