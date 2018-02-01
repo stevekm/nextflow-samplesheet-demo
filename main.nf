@@ -81,7 +81,7 @@ Channel.fromPath( file(params.pairs_sample_sheet) )
 
 
 // Samples List
-Channel.from( params.samples_list ).set{ samples_list }
+Channel.from( params.samples_list ).into{ samples_list; samples_list2 }
 
 process print_samples {
     tag { sample_ID }
@@ -185,6 +185,19 @@ process make_samples_list_files {
     script:
     """
     echo "${sampleID}" > "${sampleID}"
+    """
+}
+
+
+process print_samples_list {
+    echo true
+
+    input:
+    val(sampleID) from samples_list2.toList()
+
+    script:
+    """
+    echo "print_samples_list: ${sampleID.join(' ')}"
     """
 }
 
