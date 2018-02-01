@@ -1,3 +1,8 @@
+//
+// 
+// Example pipeline to show Sample Sheet parsing
+//
+//
 params.input_dir = "input"
 params.output_dir = "output"
 
