@@ -21,3 +21,6 @@ clean-work:
 clean: clean-logs clean-work
 
 clean-all: clean clean-output
+
+copy: output results_dir
+	rsync -vrthP output/ results_dir/
