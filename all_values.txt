@@ -1,0 +1,3 @@
+heres your value: gamma
+heres your value: beta
+heres your value: alpha
