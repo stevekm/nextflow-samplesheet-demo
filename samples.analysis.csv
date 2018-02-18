@@ -2,4 +2,9 @@ Sample,Tumor,Normal,Val1,Val2
 HapMap,SeraCare,HapMap,foo1,foo2
 SeraCare,SeraCare,HapMap,bar1,bar2
 NTC-H2O,NTC-H2O,NA,baz1,baz2
-
+HapMap2,SeraCare2,HapMap2,foo1,foo2
+SeraCare2,SeraCare2,HapMap2,bar1,bar2
+Sample3,NA,NA,aa1,aa2
+Sample4,Sample4,NA,bb1,bb2
+Sample5,Sample6,Sample5,cc1,cc2
+Sample6,Sample6,Sample5,dd1,dd2
