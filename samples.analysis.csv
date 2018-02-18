@@ -1,0 +1,5 @@
+Sample,Tumor,Normal,Val1,Val2
+HapMap,SeraCare,HapMap,foo1,foo2
+SeraCare,SeraCare,HapMap,bar1,bar2
+NTC-H2O,NTC-H2O,NA,baz1,baz2
+
