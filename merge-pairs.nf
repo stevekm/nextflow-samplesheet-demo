@@ -14,10 +14,6 @@
 // Sample5,Sample6,Sample5,cc1,cc2
 // Sample6,Sample6,Sample5,dd1,dd2
 
-//
-// DOES NOT WORK FOR MULTIPLE TUMOR SAMPLES WITH THE SAME NORMAL SAMPLE
-//
-
 params.samples_file = "samples.analysis.csv"
 
 // read in sample IDs and values from sheet
@@ -52,6 +48,7 @@ samples2.map { row ->
 // view paired entries
 samples_pairs2.subscribe { println "samples_pairs2: ${it}" }
 
+
 // make files for every sample
 process make_file {
     tag { "${sampleID}" }
@@ -71,25 +68,41 @@ process make_file {
     """
 }
 
-// merge the files per-sample with the sample pairs
-sample_files.join(samples_pairs) // gets the Normal ID for every sample; only samples that passed Normal ID filtering
-            .map { item ->
+sample_files.combine(samples_pairs) // get all the combinations of samples & pairs
+            .filter { item -> // only keep combinations where sample is same as tumor pair sample
+                def sampleID = item[0]
+                def tumorID = item[2]
+                sampleID == tumorID
+            }
+            .map { item -> // re-order the elements for joining
+                def sampleID = item[0]
+                def sampleFile = item[1]
+                def tumorFile = sampleFile
+                def tumorID = item[2]
+                def normalID = item[3]
+                return [ tumorID, tumorFile, normalID ]
+            }
+            .combine(sample_files2) // combine again to get the samples & files again
+            .filter { item -> // keep only combinations where the normal ID matches the new sample ID
                 def tumorID = item[0]
                 def tumorFile = item[1]
                 def normalID = item[2]
-                return [ normalID, tumorID, tumorFile ] // need to put the Normal ID as first array entry for next join operation
+                def sampleID = item[3]
+                def sampleFile = item[4]
+                normalID == sampleID
             }
-            .join(sample_files2) // gets the normalFile for every normalID in the first position of the array; appends the filepath to the end of the array
-            .map { item ->
-                def normalID = item[0]
-                def tumorID = item[1]
-                def tumorFile = item[2]
-                def normalFile = item[3]
-                return [ tumorID, tumorFile, normalID, normalFile ] // put the array items back in the correct order again
+            .map {item -> // re arrange the elements
+                def tumorID = item[0]
+                def tumorFile = item[1]
+                def normalID = item[2]
+                def sampleID = item[3]
+                def sampleFile = item[4]
+                def normalFile = sampleFile
+                return [ tumorID, tumorFile, normalID, normalFile ]
             }
-            .into { sample_file_pairs; sample_file_pairs2 }
+            .set { sample_file_pairs }
+            // .subscribe { println "sample_files: ${it}" }
 
-sample_file_pairs2.subscribe { println "sample_file_pairs2: ${it}" }
 
 process tumor_normal_compare {
     echo true
