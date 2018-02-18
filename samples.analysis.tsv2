@@ -1,0 +1,5 @@
+Sample	Tumor	Normal	Val1	Val2
+HapMap-B17-1267	HapMap-B17-1267	NA	foo1	foo2
+SeraCare-1to1-Positive	SeraCare-1to1-Positive	HapMap-B17-1267	bar1	bar2
+NTC-H2O	NTC-H2O	NA	baz1	baz2
+
